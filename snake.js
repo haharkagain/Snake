@@ -3,21 +3,21 @@ function snake() {
     canv = document.getElementById("snake");
     ctx = canv.getContext("2d");
     let unit = canv.width / 25;
-    let edge = 24;
+    let edge = 24; // one less than number of units for proper edge detection
     playing = false;
-    init = true;
+    init = true; // for starting screen
     reset();
     draw();
     init = false;
     window.addEventListener("keydown", keyInput);
     setInterval(function() {
-        if (playing) {
+        if (playing) { // stops interval if paused
             draw();
             move();
             collision();
         }
     }, 50)
-    function reset() { 
+    function reset() { // runs when someone dies 
         if (playing) {
             playing = false;
             draw();
@@ -62,7 +62,7 @@ function snake() {
                     updated = false;
                 }
                 break;
-            case 32: // space
+            case 32: // space for pause
                 if (playing) {
                     playing = false;
                     draw();
@@ -74,29 +74,29 @@ function snake() {
         }
     }
     function move() {
-        if ((posX > edge) || (posX < 0) || (posY > edge) || (posY < 0)) {
-            reset();
-        }
         posX += velX;
         posY += velY;
-        updated = true;
-        trail.push({x:posX, y:posY});
+        updated = true; // make sure snake moved before new movement input is registered
+        trail.push({x:posX, y:posY}); // drawing tail
         while (trail.length > tail) {
             trail.shift();
         }
     }
     function collision() {
-        if ((posX == appleX) && (posY == appleY)) {
+        if ((posX > edge) || (posX < 0) || (posY > edge) || (posY < 0)) { // edge detection
+            reset();
+        }
+        if ((posX == appleX) && (posY == appleY)) { // apple collision
             tail += 1;
             appleX = Math.floor(Math.random() * edge);
             appleY = Math.floor(Math.random() * edge);
         }
-        for (var i = trail.length - 1; i >= 0; i--) {
-            if ((trail[i].x == appleX) && (trail[i].y == appleY)) {
+        for (var i = trail.length - 1; i >= 0; i--) { 
+            if ((trail[i].x == appleX) && (trail[i].y == appleY)) { // reposition apple if it is inside the tail
                 appleX = Math.floor(Math.random() * edge);
                 appleY = Math.floor(Math.random() * edge);
             }
-            if (i < trail.length - 1) {
+            if (i < trail.length - 1) { // checking tail collision
                 if ((posX == trail[i].x) && (posY == trail[i].y)) {
                     reset();
                 }
@@ -105,8 +105,8 @@ function snake() {
     }
     function draw() {
         ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, canv.width, canv.height);
-        if (init == false) {
+        ctx.fillRect(0, 0, canv.width, canv.height); // background
+        if (init == false) { // draws apple and snake if it is not the first open
             ctx.fillStyle = "red";
             ctx.fillRect(appleX * unit, appleY * unit, unit - 1, unit - 1);
             ctx.fillStyle = "lime";

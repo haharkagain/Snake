@@ -1,0 +1,8 @@
+body {
+    background-color: gray;
+}
+
+#snake {
+    margin: auto;
+    display: block;
+}
