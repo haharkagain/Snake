@@ -121,7 +121,8 @@ function snake() {
             ctx.fillText("Tail Length: " + tail, canv.width/2, canv.height/4); 
         }
         if (playing == false) {
-            ctx.fillText('Press "space" to start!', canv.width/2, canv.height/2);  
+            ctx.fillText('Press "space" to start!', canv.width/2, canv.height/2);
+            ctx.fillText('Use the Arrow Keys to move', canv.width / 2, canv.height / 3 * 2);  
         }
     }    
 }
