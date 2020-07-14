@@ -2,15 +2,16 @@ window.addEventListener("load", snake, false);
 function snake() {
     canv = document.getElementById("snake");
     ctx = canv.getContext("2d");
-    let unit = canv.width / 25;
-    let edge = 24; // one less than number of units for proper edge detection
+    let unit = canv.width / 24;
+    let edge = 23; // one less than number of units for proper edge detection
     playing = false;
     init = true; // for starting screen
     reset();
     draw();
     init = false;
+    AI = false;
     window.addEventListener("keydown", keyInput);
-    setInterval(function() {
+    fps = setInterval(function() {
         if (playing) { // stops interval if paused
             draw();
             move();
@@ -22,46 +23,121 @@ function snake() {
             playing = false;
             draw();
         }  
-        posX = Math.floor(edge / 2);
+        posX = 12;
         posY = posX;
         appleX = Math.floor(Math.random() * edge);
         appleY = Math.floor(Math.random() * edge);
         tail = 5;
         trail = [];
         velX = 1;
-        velY = 0;
+        velY = 0;;
         updated = true;
+    }
+    function right() {
+        if ((velX != -1) && (updated)) {
+            velX = 1;
+            velY = 0;
+            updated = false;
+        }
+    }
+    function up() {
+        if ((velY != 1) && (updated)) {
+            velX = 0;
+            velY = -1;
+            updated = false;
+        }
+    }
+    function left() {
+        if ((velX != 1) && (updated)) {
+            velX = -1;
+            velY = 0;
+            updated = false;
+        }
+    }
+    function down() {
+        if ((velY != -1) && (updated)) {
+            velX = 0;
+            velY = 1;
+            updated = false;
+        }
+    }
+    function bruteForceAI() {
+        if (velY == 0) {
+            if (posX == edge) {
+                down();
+                return;
+            }
+            if (posX == 1) {
+                if (posY == edge) {
+                   return; 
+                }
+                else if (velX != 1) {
+                    down();
+                } 
+                return;
+            }
+            if (posX == 0) {
+                up();
+                return;
+            }
+        }
+        else {
+            if (posX == edge) {
+                left();
+                return;
+            }
+            if (posX == 1) {
+                right();
+                return;
+            }
+            if (posY == 0) {
+                right();
+                return;
+            }
+        }  
     }
     function keyInput(evt) {
         switch(evt.keyCode) {
             case 37: // left
-                if ((velX != 1) && (updated)) {
-                    velX = -1;
-                    velY = 0;
-                    updated = false;
+                if (!AI) {
+                    left();
                 }
                 break;
             case 38: // up
-                if ((velY != 1) && (updated)) {
-                    velX = 0;
-                    velY = -1;
-                    updated = false;
+                if (!AI) {
+                    up();
                 }
                 break;
             case 39: // right
-                if ((velX != -1) && (updated)){
-                    velX = 1;
-                    velY = 0;
-                    updated = false;
+                if (!AI) {
+                    right();
                 }
                 break;
             case 40: // down
-                if ((velY != -1) && (updated)) {
-                    velX = 0;
-                    velY = 1;
-                    updated = false;
+                if (!AI) {
+                    down();
                 }
                 break;
+            case 65: // left
+                if (!AI) {
+                    left();
+                }
+                break;
+            case 87: // up
+                if (!AI) {
+                    up();
+                }
+                break;
+            case 68: // right
+                if (!AI) {
+                    right();
+                }
+                break;
+            case 83: // down
+                if (!AI) {
+                    down();
+                }
+                break;  
             case 32: // space for pause
                 if (playing) {
                     playing = false;
@@ -71,7 +147,25 @@ function snake() {
                     playing = true;
                 }
                 break;
-        }
+            case 66: // b for bruteforce    
+                if (!playing) {
+                    posX = 12;
+                    posY = 12;
+                    AI = true;
+                    clearInterval(fps);
+                    playing = true;
+                    fps = setInterval(function() {
+                        if (playing) { // stops interval if paused
+                            draw();
+                            bruteForceAI();
+                            move();
+                            collision();
+                        }
+                    }, 0)
+                }
+                break;
+                 
+        }   
     }
     function move() {
         posX += velX;
@@ -122,7 +216,8 @@ function snake() {
         }
         if (playing == false) {
             ctx.fillText('Press "space" to start!', canv.width/2, canv.height/2);
-            ctx.fillText('Use the Arrow Keys to move', canv.width / 2, canv.height / 3 * 2);  
+            ctx.fillText('Use the Arrow Keys to move', canv.width / 2, canv.height / 3 * 2);
+            ctx.fillText('Press "b" to use the AI!', canv.width/2, canv.height/5 * 4);  
         }
     }    
 }
